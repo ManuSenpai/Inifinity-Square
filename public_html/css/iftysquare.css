@@ -47,3 +47,66 @@ canvas {
     font-family: "Arial", sans-serif;
     font-size: 22pt;
 }
+
+.start{
+    width: 800px;
+    height: 500px;
+    border: black 5px solid;
+    background-color: lightblue;
+    margin-left: 3em;
+}
+
+.end{
+    width: 800px;
+    height: 500px;
+    border: black 5px solid;
+    background-color: lightslategrey;
+    margin-left: 3em;
+}
+
+.game-text{
+    font-family: "Arial", sans-serif;
+    font-size: 22pt;
+    text-align: center;
+}
+
+.score{
+    font-family: "Arial", sans-serif;
+    font-size: 30pt;
+    text-align: center;
+    color: yellow;
+}
+
+.difficulty-button{
+    list-style-type: none;
+}
+
+button{
+    width: 15em;
+    height: 3em;
+    margin: 2em 0em 2em 0em;
+    color: white;
+}
+
+button:hover{
+    color: white;
+    background-color: black;
+}
+
+.easy{
+    background-color: darkcyan;
+}
+
+.difficult{
+    background-color: darkred;
+}
+
+.normal{
+    background-color: darkorange;
+}
+
+ul{
+    display: block;
+    position: relative;
+    margin: 0 33% 0 33%;
+}

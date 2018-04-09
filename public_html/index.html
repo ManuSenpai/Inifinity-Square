@@ -15,7 +15,29 @@ and open the template in the editor.
             Drive the square to avoid obstacles!
         </header>
         <p id="chrono"></p>
-        <div id="gameplay">
+        <div id="startScreen" class = "start">
+            <h3 class="game-text">Select a difficulty level</h3>
+            <ul>
+                <li class="difficulty-button">
+                    <button id="easy" class="easy" onclick="showGame('EASY')" onmouseover="changeInfoText('EASY')">EASY</button>
+                </li>
+                <li class="difficulty-button">
+                    <button id="normal" class="normal" onclick="showGame('NORMAL')" onmouseover="changeInfoText('NORMAL')">NORMAL</button>
+                </li>
+                <li class="difficulty-button">
+                    <button id="hard" class="difficult" onclick="showGame('DIFFICULT')" onmouseover="changeInfoText('HARD')">HARD</button>
+                </li>
+            </ul>
+            <div id="explanation" class="game-text"></div>
+        </div>
+        <div id="gameplay" hidden>
+        </div>
+        <div id="endScreen" class = "end" hidden>
+            <h2 class="game-text">GAME OVER</h2>
+            <h2 class="game-text">YOUR TIME:</h2>
+            <h1 id="score" class="score">-</h1>
+            
+           
         </div>
         <img src="images/spaceship.png" class="spaceship" alt="spaceship"><span id="lives" class="lives-counter"></span>
         <footer>

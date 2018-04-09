@@ -28,6 +28,13 @@ var TIME_PENALTY = 15;
 var CHRONO_MSG = "Time goes by...";
 var NUMBER_OF_LIVES = 3;
 
+var infotexts = {
+    "NONE": "Choose a difficulty.",
+    "EASY": "Easy peasy. A walk in the park",
+    "NORMAL": "A bit challenging, but not much",
+    "HARD": "Holy crap! Are you nuts?"
+}
+
 function SquaredForm(x, y, width, height, color, img = null) {
     this.x = x;
     this.y = y;
@@ -41,7 +48,7 @@ function SquaredForm(x, y, width, height, color, img = null) {
     this.setPosition = function(x, y){
         this.x = x;
         this.y = y;
-    }
+    };
     this.setSpeedX = function (speedX) {
         this.speedX = speedX;
     };
@@ -89,14 +96,26 @@ var obstacles = [];
 var enemies = []; // EnemyShips.
 var rightArrowPressed = false, leftArrowPressed = false, upArrowPressed = false, downArrowPressed = false;
 var seconds, minutes, timeout, theChrono, nLives;
-var continueGame = true;
+var continueGame = false;
 var image = new Image();
+var startscreen;
+var endscreen;
+var gamescreen;
+var infogametext;
 image.src = "images/spaceship.png";
 var theSquare = new SquaredForm(0, GAME_AREA_HEIGHT / 2, SQUARE_SIZE, SQUARE_SIZE, SQUARE_COLOR, image);
 
 var gameArea = {
     canvas: document.createElement("canvas"),
     init: function () {
+        startscreen = document.getElementById("startScreen");
+        endscreen = document.getElementById("endScreen");
+        gamescreen = document.getElementById("gameplay");
+        infogametext = document.getElementById("explanation");
+        this.clearAllLayers();
+        
+        startscreen.hidden = false;
+        infogametext.innerHTML = infotexts["NONE"];
         this.canvas.width = GAME_AREA_WIDTH;
         this.canvas.height = GAME_AREA_HEIGHT;
         this.context = this.canvas.getContext("2d");
@@ -117,8 +136,54 @@ var gameArea = {
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    clearAllLayers: function(){
+        document.getElementById("startScreen").hidden=true;
+        document.getElementById("endScreen").hidden=true;
+        document.getElementById("gameplay").hidden=true;
+    },
+    showGame: function(){
+        this.clearAllLayers();
+        document.getDocumentById("gameplay").hidden = false;
     }
 };
+
+function showGame(difficulty){
+    switch(difficulty){
+        case 'EASY':
+            OBSTACLE_MIN_GAP = 70;
+            OBSTACLE_MAX_GAP = 400;
+            ENEMY_SPEED = 2;
+            PROBABILITY_OBSTACLE = 0.5;
+            PROBABILITY_ENEMY = 0.3;
+            break;
+        case 'NORMAL':
+            OBSTACLE_MIN_GAP = 60;
+            OBSTACLE_MAX_GAP = 200;
+            ENEMY_SPEED = 3;
+            PROBABILITY_OBSTACLE = 0.7;
+            PROBABILITY_ENEMY = 0.5;
+           break;
+        case 'DIFFICULT':
+            OBSTACLE_MIN_GAP = 50;
+            OBSTACLE_MAX_GAP = 150;
+            ENEMY_SPEED = 5;
+            PROBABILITY_OBSTACLE = 0.9;
+            PROBABILITY_ENEMY = 0.8;
+            break;
+    }
+    gameArea.clearAllLayers();
+    gamescreen.hidden = false;
+    gameArea.render();
+    continueGame = true;
+    updateLives();
+    updateChrono();
+    
+}
+
+function changeInfoText(level){
+    infogametext.innerHTML = infotexts[level];
+}
 
 var handlerOne = function (event) {
     switch (event.keyCode) {
@@ -177,9 +242,11 @@ var handlerTwo = function (event) {
 window.onload = startGame;
 
 function startGame() {
+    
     gameArea.init();
-    gameArea.render();
-
+    //gameArea.render();
+    
+    //startscreen.style.display = "inline";
     window.document.addEventListener("keydown", handlerOne);
     window.document.addEventListener("keyup", handlerTwo);
 
@@ -188,7 +255,6 @@ function startGame() {
     timeout = window.setTimeout(updateChrono, 1000);
     theChrono = document.getElementById("chrono");
     nLives = document.getElementById("lives");
-    updateLives();
 }
 
 function updateGame() {
@@ -326,4 +392,8 @@ function endGame() {
     clearInterval(gameArea.interval);
     window.document.removeEventListener("keydown", handlerOne);
     window.document.removeEventListener("keyup", handlerTwo);
+    gamescreen.hidden = true;
+    endscreen.hidden = false;
+    document.getElementById("score").innerHTML = minutes +":" + pad(seconds,2);
+    
 }
