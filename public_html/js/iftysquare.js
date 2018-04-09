@@ -17,8 +17,12 @@ var OBSTACLE_MAX_HEIGHT = 400;
 var OBSTACLE_WIDTH = 20;
 var OBSTACLE_MIN_GAP = 55;
 var OBSTACLE_MAX_GAP = 400;
+var ENEMY_COLOR = "black";
+var ENEMY_SPEED = 3;
 var PROBABILITY_OBSTACLE = 0.7;
+var PROBABILITY_ENEMY = 0.5;
 var FRAME_OBSTACLE = 85;
+var FRAME_ENEMY = 60;
 var FPS = 30;
 var CHRONO_MSG = "Time goes by...";
 
@@ -38,14 +42,12 @@ function SquaredForm(x, y, width, height, color, img = null) {
         this.speedY = speedY;
     };
     this.render = function (ctx) {
-        if( this.img ){
+        if( this.img ){ // we check whether the img is null or not. If it is not, we are drawing the spaceship
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }else{
             ctx.fillStyle = this.color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
-        
-        
+        }  
     };
     this.move = function () {
         this.x += this.speedX;
@@ -77,6 +79,7 @@ function SquaredForm(x, y, width, height, color, img = null) {
 //var theSquare = new SquaredForm(0, GAME_AREA_HEIGHT / 2, SQUARE_SIZE, SQUARE_SIZE, SQUARE_COLOR);
 
 var obstacles = [];
+var enemies = []; // EnemyShips.
 var rightArrowPressed = false, leftArrowPressed = false, upArrowPressed = false, downArrowPressed = false;
 var seconds, minutes, timeout, theChrono;
 var continueGame = true;
@@ -94,10 +97,14 @@ var gameArea = {
         theDiv.appendChild(this.canvas);
         this.interval = setInterval(updateGame, 1000 / FPS);
         this.frameNumber = 0;
+        this.frameEnemy = 0;
     },
     render: function () {
         for (var i = 0; i < obstacles.length; i++) {
             obstacles[i].render(this.context);
+        }
+        for (var i = 0; i < enemies.length; i++) {
+            enemies[i].render(this.context);
         }
         theSquare.render(this.context);
     },
@@ -189,9 +196,12 @@ function updateGame() {
     } else {
         // Increase count of frames
         gameArea.frameNumber += 1;
+        gameArea.frameEnemy += 1;
         // Let's see if new obstacles must be created
         if (gameArea.frameNumber >= FRAME_OBSTACLE)
             gameArea.frameNumber = 1;
+        if (gameArea.frameEnemy >= FRAME_ENEMY)
+            gameArea.frameEnemy = 1;
         // First: check if the given number of frames has passed
         if (gameArea.frameNumber === 1) {
             var chance = Math.random();
@@ -211,6 +221,16 @@ function updateGame() {
                 }
             }
         }
+        // We check wether the given number for enemies has been overpassed or not.
+        if( gameArea.frameEnemy === 1){
+            var echance = Math.random();
+            if (echance < PROBABILITY_ENEMY) {
+                var where = (Math.random() * gameArea.canvas.height);
+                var enemy = new SquaredForm(gameArea.canvas.width, where, SQUARE_SIZE, SQUARE_SIZE, ENEMY_COLOR);
+                enemy.setSpeedX(-ENEMY_SPEED);
+                enemies.push(enemy);
+            }
+        }
         // Move obstacles and delete the ones that goes outside the canvas
         for (var i = obstacles.length - 1; i >= 0; i--) {
             obstacles[i].move();
@@ -219,6 +239,16 @@ function updateGame() {
                 obstacles.splice(i, 1);
             }
         }
+        
+        // Move enemies and delete the ones that goes outside the canvas
+        for (var i = enemies.length - 1; i >= 0; i--) {
+            enemies[i].move();
+            if (enemies[i].x + OBSTACLE_WIDTH <= 0) {
+                delete(enemies[i]);
+                enemies.splice(i, 1);
+            }
+        }
+        
         // Move our hero
         theSquare.move();
         // Our hero can't go outside the canvas
