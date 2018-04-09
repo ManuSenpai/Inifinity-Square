@@ -24,7 +24,9 @@ var PROBABILITY_ENEMY = 0.5;
 var FRAME_OBSTACLE = 85;
 var FRAME_ENEMY = 60;
 var FPS = 30;
+var TIME_PENALTY = 15;
 var CHRONO_MSG = "Time goes by...";
+var NUMBER_OF_LIVES = 3;
 
 function SquaredForm(x, y, width, height, color, img = null) {
     this.x = x;
@@ -35,6 +37,11 @@ function SquaredForm(x, y, width, height, color, img = null) {
     this.img = img;
     this.speedX = 0;
     this.speedY = 0;
+    
+    this.setPosition = function(x, y){
+        this.x = x;
+        this.y = y;
+    }
     this.setSpeedX = function (speedX) {
         this.speedX = speedX;
     };
@@ -81,7 +88,7 @@ function SquaredForm(x, y, width, height, color, img = null) {
 var obstacles = [];
 var enemies = []; // EnemyShips.
 var rightArrowPressed = false, leftArrowPressed = false, upArrowPressed = false, downArrowPressed = false;
-var seconds, minutes, timeout, theChrono;
+var seconds, minutes, timeout, theChrono, nLives;
 var continueGame = true;
 var image = new Image();
 image.src = "images/spaceship.png";
@@ -180,6 +187,8 @@ function startGame() {
     minutes = 0;
     timeout = window.setTimeout(updateChrono, 1000);
     theChrono = document.getElementById("chrono");
+    nLives = document.getElementById("lives");
+    updateLives();
 }
 
 function updateGame() {
@@ -187,7 +196,34 @@ function updateGame() {
     var collision = false;
     for (var i = 0; i < obstacles.length; i++) {
         if (theSquare.crashWith(obstacles[i])) {
-            collision = true;
+            NUMBER_OF_LIVES--;
+            delete obstacles[i];
+            obstacles.splice(i, 1);
+            updateLives();
+            collision = NUMBER_OF_LIVES === 0;
+            break;
+        }
+    }
+    // Check collision against enemies.
+    for (var i = 0; i < enemies.length; i++) {
+        if (theSquare.crashWith(enemies[i])) {
+            //NUMBER_OF_LIVES--;
+            //updateLives();
+            //if( NUMBER_OF_LIVES === 0 ) endGame();
+            if (seconds > TIME_PENALTY){
+                seconds -= TIME_PENALTY;
+            }
+            else{
+                if(minutes > 0){
+                    seconds = seconds + 60 - TIME_PENALTY;
+                    minutes -= 1;
+                }
+                else{
+                    seconds = 0;
+                }
+            }
+            delete enemies[i];
+            enemies.splice(i,1);
             break;
         }
     }
@@ -226,8 +262,9 @@ function updateGame() {
             var echance = Math.random();
             if (echance < PROBABILITY_ENEMY) {
                 var where = (Math.random() * gameArea.canvas.height);
+                var randomSpeed = (Math.random() * ENEMY_SPEED) + ENEMY_SPEED;
                 var enemy = new SquaredForm(gameArea.canvas.width, where, SQUARE_SIZE, SQUARE_SIZE, ENEMY_COLOR);
-                enemy.setSpeedX(-ENEMY_SPEED);
+                enemy.setSpeedX(-randomSpeed);
                 enemies.push(enemy);
             }
         }
@@ -267,6 +304,12 @@ function updateChrono() {
         }
         theChrono.innerHTML = CHRONO_MSG + " " + pad(minutes, 2) + ":" + pad(seconds, 2);
         timeout = window.setTimeout(updateChrono, 1000);
+    }
+}
+
+function updateLives(){
+    if(continueGame){
+        nLives.innerHTML = " X " + NUMBER_OF_LIVES; 
     }
 }
 
