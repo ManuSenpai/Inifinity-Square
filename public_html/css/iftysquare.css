@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 07-feb-2018, 14:43:53
+    Author     : jcamen
+*/
+
+header {
+    margin-top: 1em;
+    margin-bottom: 2em;
+    font-family: "Arial", sans-serif;
+    font-size: 22pt;
+    text-align: center;
+}
+
+footer {
+    margin-top: 2em;
+    font-family: "Times", serif;
+    font-size: 16pt;
+    text-align: center;
+}
+
+canvas {
+    border: black 5px solid;
+    background-color: #e6e6e6;
+    margin-left: 3em;
+}
+
+#chrono {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 16pt;
+    margin-right: 3em;
+    text-align: right;
+    color: blueviolet;
+}
+
+.spaceship{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    background-size: contain;
+}
